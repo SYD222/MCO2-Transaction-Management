@@ -1,32 +1,32 @@
+// import module `express`
 const express = require('express');
+
+// import module `hbs`
+const hbs = require('hbs');
 const app = express();
-
-// Set up Handlebars
+const port = 9090;
 app.set('view engine', 'hbs');
+// Serve the search page
+app.get('/', (req, res) => {
+    res.render('search'); // Render the matches.hbs file
+});
+app.get('/add', (req, res) => {
+    res.render('addGame'); // Render the matches.hbs file
+});
+app.get('/update', (req, res) => {
+    res.render('update', gamedata); // Render the matches.hbs file
+});
+// Handle search requests at "/"
+app.post('/', (req, res) => {
+    const { title } = req.body;
 
-app.get('/update-game', (req, res) => {
-    // Replace this with your database query
-    const gameData = {
-        title: "Hi",
-        age: 12,
-        about: "This is a sample game.",
-        devs: "Game Dev Studio",
-        pubs: "Game Pub Inc.",
-        cat: "Adventure, Action",
-        genres: "Role-Playing",
-        tags: "Multiplayer, Open World",
-        site: "https://example.com",
-        ach: "Achievement 1, Achievement 2",
-        supurl: "https://support.example.com",
-        supemail: "support@example.com",
-        windows: true,
-        linux: false,
-        mac: true
-    };
+    // Find all games matching the title (case-insensitive search)
+    const matchingGames = games.filter(g => g.title.toLowerCase().includes(title.toLowerCase()));
 
-    res.render('update', gameData); // Render the HBS file with game data
+    // Respond with JSON for AJAX requests
+    res.json({ games: matchingGames });
 });
 
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
+app.listen(port, ()=>{
+	console.log('Server on '+ port);
 });
