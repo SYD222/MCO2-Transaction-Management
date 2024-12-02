@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 
 // Initialize the Express app
 const app = express();
-const port = 9090;
+// Use dynamic port assignment for deployment, default to 9090
+const port = process.env.PORT || 9090; 
 
 // Set up view engine and middleware
 app.set('view engine', 'hbs');
