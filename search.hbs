@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <title>Search/View</title>
-	<script>
+    <script>
         // Function to perform AJAX search
         async function searchGames(event) {
             event.preventDefault(); // Prevent form from reloading the page
 
-            const searchQuery = document.getElementById('search-input').value;
+            const searchQuery = document.getElementById('search').value;
             const resultsDiv = document.getElementById('results');
 
             // Clear previous results
@@ -30,9 +30,23 @@
                 data.games.forEach(game => {
                     const gameElement = document.createElement('div');
                     gameElement.innerHTML = `
-                        <p>
-                            <a href="/details/${game.appid}">${game.title} (ID: ${game.appid})</a>
-                        </p>
+                        <div>
+                            <h3>${game.title} (ID: ${game.appid})</h3>
+                            <p><strong>Required Age:</strong> ${game.requiredAge}</p>
+                            <p><strong>Price:</strong> ${game.price}</p>
+                            <p><strong>About the Game:</strong> ${game.about}</p>
+                            <p><strong>Website:</strong> <a href="${game.website}" target="_blank">${game.website}</a></p>
+                            <p><strong>Support URL:</strong> <a href="${game.supportUrl}" target="_blank">${game.supportUrl}</a></p>
+                            <p><strong>Support Email:</strong> ${game.supportEmail}</p>
+                            <p><strong>Windows:</strong> ${game.windows}</p>
+                            <p><strong>Mac:</strong> ${game.mac}</p>
+                            <p><strong>Linux:</strong> ${game.linux}</p>
+                            <p><strong>Achievements:</strong> ${game.achievements}</p>
+                            <p><strong>Developers:</strong> ${game.developers.join(', ')}</p>
+                            <p><strong>Publishers:</strong> ${game.publishers.join(', ')}</p>
+                            <p><strong>Genres:</strong> ${game.genres.join(', ')}</p>
+                        </div>
+                        <hr>
                     `;
                     resultsDiv.appendChild(gameElement);
                 });
@@ -43,9 +57,11 @@
     </script>
 </head>
 <body>
-<input type="text" name="search" id="search" value="Search by name"></br>
-<input type="button" name="send" value="search">
-
-</div>
+    <h1>Game Search</h1>
+    <form onsubmit="searchGames(event)">
+        <input type="text" id="search" placeholder="Search by name" required>
+        <button type="submit">Search</button>
+    </form>
+    <div id="results"></div>
 </body>
 </html>
