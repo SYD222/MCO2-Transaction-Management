@@ -15,7 +15,7 @@ async function searchGames(event) {
         const response = await fetch('/search', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: searchQuery }),
+            body: JSON.stringify({ Name: searchQuery }), // Updated key to match database query
         });
 
         const data = await response.json();
@@ -39,7 +39,6 @@ async function searchGames(event) {
     }
 }
 </script>
-
 </head>
 <body>
     <form onsubmit="searchGames(event)">
@@ -49,20 +48,6 @@ async function searchGames(event) {
 
     <input type="button" name="add" value="Add Game" onclick="window.location.href='/add'">
     
-    <!-- Results section (This will be populated dynamically by JavaScript) -->
-    <div id="results">
-        {{#if games}}
-            {{#each games}}
-            <div>
-                <p>
-                <a href="/update/{{this.AppID}}">{{this.Name}} (ID: {{this.AppID}})</a>
-                </p>
-            </div>
-            {{/each}}
-        {{else}}
-            <p>No games found.</p>
-        {{/if}}
-    </div>
-
+    <div id="results"></div>
 </body>
 </html>

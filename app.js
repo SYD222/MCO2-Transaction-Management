@@ -31,93 +31,118 @@ connection.connect(err => {
 
 // Routes for rendering views
 app.get('/', (req, res) => {
-  res.render('search');  // This will render search.hbs
+  res.render('search'); // Render search.hbs
 });
 
 app.get('/add', (req, res) => {
-  res.render('addGame');  // This will render addGame.hbs
+  res.render('addGame'); // Render addGame.hbs
 });
 
 app.get('/update/:appid', (req, res) => {
   const appid = req.params.appid;
   connection.query('SELECT * FROM games WHERE appid = ?', [appid], (err, results) => {
     if (err) throw err;
-    res.render('update', { game: results[0] });  // This will render update.hbs
+    res.render('update', { game: results[0] }); // Render update.hbs
   });
 });
 
-
-app.get('/search', (req, res) => {
-  res.render('searchResults', { games: games });
-});
-
-
-// Route for handling the addition of a new game
+// Route for adding a new game
 app.post('/add', (req, res) => {
-  const { title, reqAge, about, devs, pubs, categories, genres, site, ach, supurl, supemail, price, windows, linux, mac } = req.body;
+  const {
+    Name,
+    RequiredAge,
+    AboutGame,
+    Developers,
+    Publishers,
+    Genres,
+    Website,
+    Achievements,
+    SupportURL,
+    SupportEmail,
+    Price,
+    Windows,
+    Linux,
+    Mac
+  } = req.body;
+
   const game = {
-    title,
-    reqAge,
-    about,
-    devs,
-    pubs,
-    categories,
-    genres,
-    site,
-    ach,
-    supurl,
-    supemail,
-    price,
-    windows: windows === 'on' ? 1 : 0,
-    linux: linux === 'on' ? 1 : 0,
-    mac: mac === 'on' ? 1 : 0
+    Name,
+    RequiredAge: parseFloat(RequiredAge),
+    AboutGame,
+    Developers,
+    Publishers,
+    Genres,
+    Website,
+    Achievements: parseInt(Achievements, 10),
+    SupportURL,
+    SupportEmail,
+    Price: parseFloat(Price),
+    Windows: Windows === 'on' ? 'TRUE' : 'FALSE',
+    Linux: Linux === 'on' ? 'TRUE' : 'FALSE',
+    Mac: Mac === 'on' ? 'TRUE' : 'FALSE'
   };
 
   connection.query('INSERT INTO games SET ?', game, (err, result) => {
     if (err) throw err;
-    res.redirect('/');  // Redirect to search page
+    res.redirect('/'); // Redirect to the home page or search
   });
 });
+
 
 // Route for updating a game
 app.post('/update/:appid', (req, res) => {
   const appid = req.params.appid;
-  const { title, reqAge, about, devs, pubs, categories, genres, site, ach, supurl, supemail, price, windows, linux, mac } = req.body;
-  const game = {
-    title,
-    reqAge,
-    about,
-    devs,
-    pubs,
-    categories,
-    genres,
-    site,
-    ach,
-    supurl,
-    supemail,
+  const {
+    Name,
+    'Required age': RequiredAge,
+    'About the game': AboutGame,
+    Developers,
+    Publishers,
+    Genres,
+    Website,
+    Achievements,
+    'Support url': SupportURL,
+    'Support email': SupportEmail,
     price,
-    windows: windows === 'on' ? 1 : 0,
-    linux: linux === 'on' ? 1 : 0,
-    mac: mac === 'on' ? 1 : 0
+    Windows,
+    Linux,
+    Mac
+  } = req.body;
+
+  const game = {
+    Name,
+    RequiredAge,
+    AboutGame,
+    Developers,
+    Publishers,
+    Genres,
+    Website,
+    Achievements,
+    SupportURL,
+    SupportEmail,
+    Price: parseFloat(price),
+    Windows: Windows === 'on' ? 1 : 0,
+    Linux: Linux === 'on' ? 1 : 0,
+    Mac: Mac === 'on' ? 1 : 0
   };
 
   connection.query('UPDATE games SET ? WHERE appid = ?', [game, appid], (err, result) => {
     if (err) throw err;
-    res.redirect('/');  // Redirect to search page
+    res.redirect('/'); // Redirect to the search page
   });
 });
 
 // Route for searching games
 app.post('/search', (req, res) => {
-  const searchQuery = req.body.title;
+  const searchQuery = req.body.Name; // Updated to match expected input key
+  const query = 'SELECT * FROM games WHERE Name LIKE ?'; // Ensure table column 'Name' exists
 
-  connection.query('SELECT * FROM games WHERE Name LIKE ?', ['%' + searchQuery + '%'], (err, results) => {
+  connection.query(query, [`%${searchQuery}%`], (err, results) => {
     if (err) {
-      console.log(err);
-      throw err;
+      console.error('Error executing query:', err);
+      return res.status(500).json({ error: 'Database query failed' });
     }
 
-    // Return JSON data for AJAX requests
     res.json({ games: results });
   });
 });
