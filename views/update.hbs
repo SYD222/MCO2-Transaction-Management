@@ -1,49 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Game</title>
-</head>
-<body>
-<div id="updateGame">
-    <h1>Adding Game</h1>
-    <form id="update">
+<form id="update" action="/update/{{game.AppID}}" method="POST">
     <label for="Name">Game Title</label>
-	<input type="text" name="title" value="title"></br>
-	<label for="reqAge">Age Requirements</label>
-	<input type="number" name="reqAge" value="{{age}}"></br>
-	<label for="about">About the Game</label>
-	<textarea name="about">{{about}}</textarea></br>
-	<label for="devs">Developers</label>
-	<input type="text" name="devs"></br>
-	<label for="pubs">Publishers</label>
-	<input type="text" name="pubs" value="{{publisher}}"></br>
-	<label for="cat">Categories</label>
-	<textarea name="Categories">{{categorites}}</textarea></br>
-	<label for="gen">Genres</label>
-	<textarea name="gen">{{genres}}</textarea></br>
-	<label for="site">Website</label>
-	<input type="text" name="site" value="{{site}}"></br>
-	<label for="ach">Achievements</label>
-	<textarea name="ach">{{achievement}}</textarea></br>
-	<label for="supurl">Support URL</label>
-	<input type="text" name="supurl" value="{{supurl}}"></br>
-	<label for="supemail">Support Email</label>
-	<input type="email" name="supemail" value="{{supemail}}"></br>
-	<label for="price">Price</label>
-	<input type="number" name="price" value="{{price}}"></br>
+    <input type="text" name="Name" value="{{game.Name}}"><br>
+    <label for="RequiredAge">Age Requirements</label>
+    <input type="number" name="RequiredAge" value="{{game.RequiredAge}}"><br>
+    <label for="AboutGame">About the Game</label>
+    <textarea name="AboutGame">{{game.AboutGame}}</textarea><br>
+    <label for="Developers">Developers</label>
+    <input type="text" name="Developers" value="{{game.Developers}}"><br>
+    <label for="Publishers">Publishers</label>
+    <input type="text" name="Publishers" value="{{game.Publishers}}"><br>
+    <label for="Genres">Genres</label>
+    <textarea name="Genres">{{game.Genres}}</textarea><br>
+    <label for="Website">Website</label>
+    <input type="text" name="Website" value="{{game.Website}}"><br>
+    <label for="Achievements">Achievements</label>
+    <textarea name="Achievements">{{game.Achievements}}</textarea><br>
+    <label for="SupportURL">Support URL</label>
+    <input type="text" name="SupportURL" value="{{game.SupportURL}}"><br>
+    <label for="SupportEmail">Support Email</label>
+    <input type="email" name="SupportEmail" value="{{game.SupportEmail}}"><br>
+    <label for="Price">Price</label>
+    <input type="number" name="Price" value="{{game.Price}}"><br>
 
-        <label for="available">Available for:</label>
-        <label for="windows">Windows</label><input type="checkbox" name="windows" id="windows" value="windows" {{#if windows}}checked{{/if}}>
-        <label for="linux">Linux</label><input type="checkbox" name="linux" id="linux" value="linux" {{#if linux}}checked{{/if}}>
-        <label for="mac">Mac</label><input type="checkbox" name="mac" id="mac" value="mac" {{#if mac}}checked{{/if}}></br>
+    <label for="available">Available for:</label>
+    <label for="windows">Windows</label><input type="checkbox" name="Windows" value="windows" {{#if game.Windows}}checked{{/if}}>
+    <label for="linux">Linux</label><input type="checkbox" name="Linux" value="linux" {{#if game.Linux}}checked{{/if}}>
+    <label for="mac">Mac</label><input type="checkbox" name="Mac" value="mac" {{#if game.Mac}}checked{{/if}}><br>
 
-        <label for="screenshot">Add Screenshot</label>
-        <input type="file" name="screenshot" accept="image/*"></br>
+    <label for="screenshot">Add Screenshot</label>
+    <input type="file" name="screenshot" accept="image/*"><br>
 
-        <input type="submit" value="Add Game">
-    </form>
-</div>
-</body>
-</html>
+    <input type="submit" value="Update Game">
+</form>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Details</title>
+</head>
+<body>
+    <h1>Game Details</h1>
+    <p><strong>Name:</strong> {{game.Name}}</p>
+    <p><strong>Required Age:</strong> {{game.RequiredAge}}</p>
+    <p><strong>About the Game:</strong> {{game.AboutGame}}</p>
+    <p><strong>Developers:</strong> {{game.Developers}}</p>
+    <p><strong>Publishers:</strong> {{game.Publishers}}</p>
+    <p><strong>Genres:</strong> {{game.Genres}}</p>
+    <p><strong>Website:</strong> <a href="{{game.Website}}" target="_blank">{{game.Website}}</a></p>
+    <p><strong>Achievements:</strong> {{game.Achievements}}</p>
+    <p><strong>Support URL:</strong> <a href="{{game.SupportURL}}" target="_blank">{{game.SupportURL}}</a></p>
+    <p><strong>Support Email:</strong> {{game.SupportEmail}}</p>
+    <p><strong>Price:</strong> ${{game.Price}}</p>
+
+    <a href="/update/{{game.AppID}}"><button>Update Game</button></a>
+    <br>
+    <a href="/">Back to Search</a>
+</body>
+</html>

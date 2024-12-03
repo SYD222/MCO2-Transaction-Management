@@ -46,6 +46,14 @@ app.get('/update/:appid', (req, res) => {
   });
 });
 
+app.get('/game/:appid', (req, res) => {
+  const appid = req.params.appid;
+  connection.query('SELECT * FROM games WHERE appid = ?', [appid], (err, results) => {
+    if (err) throw err;
+    res.render('gameDetails', { game: results[0] }); // Render gameDetails.hbs for viewing game details
+  });
+});
+
 // Route for adding a new game
 app.post('/add', (req, res) => {
   const {
@@ -94,16 +102,16 @@ app.post('/update/:appid', (req, res) => {
   const appid = req.params.appid;
   const {
     Name,
-    'Required age': RequiredAge,
-    'About the game': AboutGame,
+    RequiredAge,
+    AboutGame,
     Developers,
     Publishers,
     Genres,
     Website,
     Achievements,
-    'Support url': SupportURL,
-    'Support email': SupportEmail,
-    price,
+    SupportURL,
+    SupportEmail,
+    Price,
     Windows,
     Linux,
     Mac
@@ -120,12 +128,12 @@ app.post('/update/:appid', (req, res) => {
     Achievements,
     SupportURL,
     SupportEmail,
-    Price: parseFloat(price),
+    Price,
     Windows: Windows === 'on' ? 1 : 0,
     Linux: Linux === 'on' ? 1 : 0,
     Mac: Mac === 'on' ? 1 : 0
   };
-
+  
   connection.query('UPDATE games SET ? WHERE appid = ?', [game, appid], (err, result) => {
     if (err) throw err;
     res.redirect('/'); // Redirect to the search page

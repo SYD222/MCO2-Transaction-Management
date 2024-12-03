@@ -25,7 +25,7 @@ async function searchGames(event) {
                 const gameElement = document.createElement('div');
                 gameElement.innerHTML = `
                     <p>
-                        <a href="/update/${game.AppID}">${game.Name} (ID: ${game.AppID})</a>
+                        <a href="/game/${game.AppID}">${game.Name} (ID: ${game.AppID})</a>
                     </p>
                 `;
                 resultsDiv.appendChild(gameElement);
