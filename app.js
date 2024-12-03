@@ -19,13 +19,16 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
   host: 'ccscloud.dlsu.edu.ph',
   user: 'root',
-  password: 'Ybms2v75jBUfCGAFWe8D4nxh',  // Replace with your MySQL password
-  database: 'mco2_database',  // Replace with your database name
+  password: 'Ybms2v75jBUfCGAFWe8D4nxh', // Replace with your MySQL password
+  database: 'mco2_database', // Replace with your database name
   port: 21530
 });
 
 connection.connect(err => {
-  if (err) throw err;
+  if (err) {
+    console.error('Database connection failed:', err.message);
+    process.exit(1); // Exit if database connection fails
+  }
   console.log('Connected to the database.');
 });
 
@@ -41,7 +44,13 @@ app.get('/add', (req, res) => {
 app.get('/update/:appid', (req, res) => {
   const appid = req.params.appid;
   connection.query('SELECT * FROM games WHERE appid = ?', [appid], (err, results) => {
-    if (err) throw err;
+    if (err) {
+      console.error('Error fetching game:', err.message);
+      return res.status(500).send('Error fetching game details');
+    }
+    if (results.length === 0) {
+      return res.status(404).send('Game not found');
+    }
     res.render('update', { game: results[0] }); // Render update.hbs
   });
 });
@@ -49,112 +58,92 @@ app.get('/update/:appid', (req, res) => {
 app.get('/game/:appid', (req, res) => {
   const appid = req.params.appid;
   connection.query('SELECT * FROM games WHERE appid = ?', [appid], (err, results) => {
-    if (err) throw err;
-    res.render('gameDetails', { game: results[0] }); // Render gameDetails.hbs for viewing game details
+    if (err) {
+      console.error('Error fetching game details:', err.message);
+      return res.status(500).send('Error fetching game details');
+    }
+    if (results.length === 0) {
+      return res.status(404).send('Game not found');
+    }
+    res.render('gameDetails', { game: results[0] }); // Render gameDetails.hbs
   });
 });
 
 // Route for adding a new game
 app.post('/add', (req, res) => {
-  const {
-    Name,
-    RequiredAge,
-    AboutGame,
-    Developers,
-    Publishers,
-    Genres,
-    Website,
-    Achievements,
-    SupportURL,
-    SupportEmail,
-    Price,
-    Windows,
-    Linux,
-    Mac
-  } = req.body;
-
   const game = {
-    Name,
-    RequiredAge: parseFloat(RequiredAge),
-    AboutGame,
-    Developers,
-    Publishers,
-    Genres,
-    Website,
-    Achievements: parseInt(Achievements, 10),
-    SupportURL,
-    SupportEmail,
-    Price: parseFloat(Price),
-    Windows: Windows === 'on' ? 'TRUE' : 'FALSE',
-    Linux: Linux === 'on' ? 'TRUE' : 'FALSE',
-    Mac: Mac === 'on' ? 'TRUE' : 'FALSE'
+    Name: req.body.Name,
+    RequiredAge: parseFloat(req.body.RequiredAge) || 0,
+    AboutGame: req.body.AboutGame,
+    Developers: req.body.Developers,
+    Publishers: req.body.Publishers,
+    Genres: req.body.Genres,
+    Website: req.body.Website,
+    Achievements: parseInt(req.body.Achievements, 10) || 0,
+    SupportURL: req.body.SupportURL,
+    SupportEmail: req.body.SupportEmail,
+    Price: parseFloat(req.body.Price) || 0,
+    Windows: req.body.Windows === 'on' ? 1 : 0,
+    Linux: req.body.Linux === 'on' ? 1 : 0,
+    Mac: req.body.Mac === 'on' ? 1 : 0
   };
 
-  connection.query('INSERT INTO games SET ?', game, (err, result) => {
-    if (err) throw err;
-    res.redirect('/'); // Redirect to the home page or search
+  connection.query('INSERT INTO games SET ?', game, (err) => {
+    if (err) {
+      console.error('Error adding game:', err.message);
+      return res.status(500).send('Error adding game');
+    }
+    res.redirect('/');
   });
 });
-
 
 // Route for updating a game
 app.post('/update/:appid', (req, res) => {
   const appid = req.params.appid;
-  const {
-    Name,
-    RequiredAge,
-    AboutGame,
-    Developers,
-    Publishers,
-    Genres,
-    Website,
-    Achievements,
-    SupportURL,
-    SupportEmail,
-    Price,
-    Windows,
-    Linux,
-    Mac
-  } = req.body;
-
   const game = {
-    Name,
-    RequiredAge,
-    AboutGame,
-    Developers,
-    Publishers,
-    Genres,
-    Website,
-    Achievements,
-    SupportURL,
-    SupportEmail,
-    Price,
-    Windows: Windows === 'on' ? 1 : 0,
-    Linux: Linux === 'on' ? 1 : 0,
-    Mac: Mac === 'on' ? 1 : 0
+    Name: req.body.Name,
+    RequiredAge: parseFloat(req.body.RequiredAge) || 0,
+    AboutGame: req.body.AboutGame,
+    Developers: req.body.Developers,
+    Publishers: req.body.Publishers,
+    Genres: req.body.Genres,
+    Website: req.body.Website,
+    Achievements: parseInt(req.body.Achievements, 10) || 0,
+    SupportURL: req.body.SupportURL,
+    SupportEmail: req.body.SupportEmail,
+    Price: parseFloat(req.body.Price) || 0,
+    Windows: req.body.Windows === 'on' ? 1 : 0,
+    Linux: req.body.Linux === 'on' ? 1 : 0,
+    Mac: req.body.Mac === 'on' ? 1 : 0
   };
-  
-  connection.query('UPDATE games SET ? WHERE appid = ?', [game, appid], (err, result) => {
-    if (err) throw err;
-    res.redirect('/'); // Redirect to the search page
+
+  connection.query('UPDATE games SET ? WHERE appid = ?', [game, appid], (err) => {
+    if (err) {
+      console.error('Error updating game:', err.message);
+      return res.status(500).send('Error updating game');
+    }
+    res.redirect('/');
   });
 });
 
 // Route for searching games
 app.post('/search', (req, res) => {
-  const searchQuery = req.body.Name; // Updated to match expected input key
-  const query = 'SELECT * FROM games WHERE Name LIKE ?'; // Ensure table column 'Name' exists
-
+  const searchQuery = req.body.Name;
+  const query = 'SELECT * FROM games WHERE Name LIKE ?';
+  
   connection.query(query, [`%${searchQuery}%`], (err, results) => {
     if (err) {
-      console.error('Error executing query:', err);
-      return res.status(500).json({ error: 'Database query failed' });
+      console.error('Error searching games:', err.message);
+      return res.status(500).send('Error searching games');
     }
-
     res.json({ games: results });
   });
 });
 
+// Handle invalid routes
+app.use((req, res) => {
+  res.status(404).send('Page not found');
+});
 
 // Start the server
 app.listen(3000, () => {
