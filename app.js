@@ -19,8 +19,8 @@ app.use(bodyParser.json());
 const connection = mysql.createConnection({
   host: 'ccscloud.dlsu.edu.ph',
   user: 'root',
-  password: 'Ybms2v75jBUfCGAFWe8D4nxh', // Replace with your MySQL password
-  database: 'mco2_database', // Replace with your database name
+  password: 'Ybms2v75jBUfCGAFWe8D4nxh', 
+  database: 'mco2_database', 
   port: 21530
 });
 
