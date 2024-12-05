@@ -63,11 +63,6 @@ function handleConnectionLoss() {
 // Start the initial connection
 connectToDatabase();
 
-// Start the Express server
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log("Server is running on http://localhost:${PORT}");
-});
 
 // Routes for rendering views
 app.get('/', (req, res) => {
