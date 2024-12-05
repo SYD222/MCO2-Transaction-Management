@@ -25,30 +25,49 @@ const dbConfig = {
 
 // Ports to attempt connection
 const ports = [21530, 21540, 21550];
+let currentPortIndex = 0;
 let connection = null;
 
-function connectToDatabase(attempt = 0) {
-  if (attempt >= ports.length) {
-    console.error('All connection attempts failed.');
-    process.exit(1); // Exit if all ports fail
-  }
-
-  const port = ports[attempt];
-  console.log(`Attempting to connect to the database on port ${port}...`);
+// Function to connect to the database
+function connectToDatabase() {
+  const port = ports[currentPortIndex];
+  console.log("Attempting to connect to the database on port ${port}...");
 
   connection = mysql.createConnection({ ...dbConfig, port });
 
   connection.connect(err => {
     if (err) {
-      console.error(`Connection failed on port ${port}:`, err.message);
-      connectToDatabase(attempt + 1); // Try the next port
+      console.error("Connection failed on port ${port}:", err.message);
+      currentPortIndex = (currentPortIndex + 1) % ports.length; // Move to the next port
+      console.log("Retrying with the next port...");
+      setTimeout(connectToDatabase, 5000); // Retry after a delay
     } else {
-      console.log(`Connected to the database on port ${port}.`);
+      console.log("Connected to the database on port ${port}.");
+      handleConnectionLoss(); // Set up a handler for connection loss
     }
   });
 }
 
+// Function to handle connection loss
+function handleConnectionLoss() {
+  connection.on('error', err => {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      console.error('Database connection lost. Reconnecting...');
+      connectToDatabase();
+    } else {
+      throw err;
+    }
+  });
+}
+
+// Start the initial connection
 connectToDatabase();
+
+// Start the Express server
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log("Server is running on http://localhost:${PORT}");
+});
 
 // Routes for rendering views
 app.get('/', (req, res) => {
