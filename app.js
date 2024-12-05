@@ -14,6 +14,14 @@ hbs.registerPartials(path.join(__dirname, 'views/partials'));
 // Middleware to parse form data
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+// List of available ports
+const ports = [21530, 21540, 21550];
+
+// Function to get a random port
+function getRandomPort() {
+  const randomIndex = Math.floor(Math.random() * ports.length);
+  return ports[randomIndex];
+}
 
 // MySQL connection
 const connection = mysql.createConnection({
@@ -21,7 +29,7 @@ const connection = mysql.createConnection({
   user: 'root',
   password: 'Ybms2v75jBUfCGAFWe8D4nxh', 
   database: 'mco2_database', 
-  port: 21530
+  port: getRandomPort()
 });
 
 connection.connect(err => {
