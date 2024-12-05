@@ -15,22 +15,40 @@ hbs.registerPartials(path.join(__dirname, 'views/partials'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// MySQL connection
-const connection = mysql.createConnection({
+// MySQL connection configuration
+const dbConfig = {
   host: 'ccscloud.dlsu.edu.ph',
   user: 'root',
   password: 'Ybms2v75jBUfCGAFWe8D4nxh', // Replace with your MySQL password
   database: 'mco2_database', // Replace with your database name
-  port: 21530
-});
+};
 
-connection.connect(err => {
-  if (err) {
-    console.error('Database connection failed:', err.message);
-    process.exit(1); // Exit if database connection fails
+// Ports to attempt connection
+const ports = [21530, 21540, 21550];
+let connection = null;
+
+function connectToDatabase(attempt = 0) {
+  if (attempt >= ports.length) {
+    console.error('All connection attempts failed.');
+    process.exit(1); // Exit if all ports fail
   }
-  console.log('Connected to the database.');
-});
+
+  const port = ports[attempt];
+  console.log(`Attempting to connect to the database on port ${port}...`);
+
+  connection = mysql.createConnection({ ...dbConfig, port });
+
+  connection.connect(err => {
+    if (err) {
+      console.error(`Connection failed on port ${port}:`, err.message);
+      connectToDatabase(attempt + 1); // Try the next port
+    } else {
+      console.log(`Connected to the database on port ${port}.`);
+    }
+  });
+}
+
+connectToDatabase();
 
 // Routes for rendering views
 app.get('/', (req, res) => {
@@ -51,7 +69,7 @@ app.get('/update/:appid', (req, res) => {
     if (results.length === 0) {
       return res.status(404).send('Game not found');
     }
-    res.render('update', { game: results[0] }); // Render update.hbs
+    res.render('update', { game: results[0] });
   });
 });
 
@@ -130,7 +148,7 @@ app.post('/update/:appid', (req, res) => {
 app.post('/search', (req, res) => {
   const searchQuery = req.body.Name;
   const query = 'SELECT * FROM games WHERE Name LIKE ?';
-  
+
   connection.query(query, [`%${searchQuery}%`], (err, results) => {
     if (err) {
       console.error('Error searching games:', err.message);
